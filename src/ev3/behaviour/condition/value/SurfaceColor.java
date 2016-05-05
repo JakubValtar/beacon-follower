@@ -7,7 +7,7 @@ public class SurfaceColor implements IntCondition.Value {
 
   @Override
   public int get(Context context) {
-    return context.color;
+    return context.surfaceColor;
   }
 
 }

@@ -27,6 +27,7 @@ import ev3.behaviour.decorator.UntilSuccess;
 import lejos.hardware.Button;
 import lejos.hardware.Key;
 import lejos.hardware.KeyListener;
+import lejos.robotics.Color;
 
 public class Main {
 
@@ -49,8 +50,8 @@ public class Main {
 
     Context context = new Context();
 
-    float successDistance = 0;
-    int obstacleColor = 0;
+    float successDistance = 5;
+    int obstacleColor = Color.BLUE;
     float directionLimit = 5;
 
     Node A_FORWARD = new Action(new Forward());

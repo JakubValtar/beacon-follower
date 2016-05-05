@@ -8,13 +8,8 @@ public class ReadSensors implements BackgroundTask {
 
   @Override
   public boolean runInBackground(Context context) {
-
-//    context.beaconDirection = ...
-//    context.beaconDistance = ...
-//    context.surfaceColor = ...
-//    return true;
-
-    return false;
+    context.sensorReader.read(context);
+    return true;
   }
 
 }
