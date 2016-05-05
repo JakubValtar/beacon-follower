@@ -14,7 +14,9 @@ public class InBetween implements FloatCondition.Predicate {
 
   @Override
   public boolean test(float value) {
-    return value >= low && value <= high;
+    return !Float.isNaN(value) &&
+        !Float.isInfinite(value) &&
+        value >= low && value <= high;
   }
 
 }
