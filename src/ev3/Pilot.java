@@ -1,73 +1,47 @@
 package ev3;
 
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.Motor;
-import lejos.hardware.port.MotorPort;
-import lejos.robotics.navigation.DifferentialPilot;
+import lejos.robotics.chassis.Wheel;
+import lejos.robotics.chassis.WheeledChassis;
 
 public class Pilot {
 
-  private EV3LargeRegulatedMotor left;
-  private EV3LargeRegulatedMotor right;
-  private float basicSpeed;
+  private WheeledChassis chassis;
+
+  private float linearSpeed;
+  private float angularSpeed;
 
   public Pilot() {
-    left = new EV3LargeRegulatedMotor(MotorPort.C);
-    right = new EV3LargeRegulatedMotor(MotorPort.B);
+    Wheel left = WheeledChassis.modelWheel(Motor.C, 10).offset(-70).invert(true);
+    Wheel right = WheeledChassis.modelWheel(Motor.B, 10).offset(70).invert(true);
+    chassis = new WheeledChassis(new Wheel[] { left, right }, WheeledChassis.TYPE_DIFFERENTIAL);
 
-    basicSpeed = 30;
+    linearSpeed = 10;
+    angularSpeed = 5;
   }
 
   public void forward() {
-    equalizeMotorsSpeed();
-
-    left.forward();
-    right.forward();
+    chassis.setVelocity(linearSpeed, 0);
   }
 
-
   public void steerLeft() {
-    setMotorsSpeed(basicSpeed/2, basicSpeed);
-
-    left.forward();
-    right.forward();
-}
+    chassis.setVelocity(linearSpeed, -angularSpeed);
+  }
 
   public void steerRight() {
-    setMotorsSpeed(basicSpeed, basicSpeed/2);
-
-    left.forward();
-    right.forward();
+    chassis.setVelocity(linearSpeed, angularSpeed);
   }
 
   public void stop() {
-    left.stop();
-    right.stop();
+    chassis.stop();
   }
 
   public void turnLeft() {
-    equalizeMotorsSpeed();
-
-    right.forward();
-    left.backward();
+    chassis.setVelocity(0, -angularSpeed);
   }
 
   public void turnRight() {
-    equalizeMotorsSpeed();
-
-    left.forward();
-    right.backward();
-  }
-
-  private void setMotorsSpeed(float leftSpeed, float rightSpeed)
-  {
-    left.setSpeed(leftSpeed);
-    right.setSpeed(rightSpeed);
-  }
-
-  private void equalizeMotorsSpeed()
-  {
-    setMotorsSpeed(basicSpeed, basicSpeed);
+    chassis.setVelocity(0, angularSpeed);
   }
 
 }
