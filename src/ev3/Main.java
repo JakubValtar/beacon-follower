@@ -47,12 +47,11 @@ public class Main {
       }
     });
 
-
     Context context = new Context();
 
-    float successDistance = 5;
+    float successDistance = 10;
     int obstacleColor = Color.BLUE;
-    float directionLimit = 5;
+    float directionLimit = 2;
 
     Node A_FORWARD = new Action(new Forward());
     Node A_STOP = new Action(new Stop());
@@ -62,11 +61,9 @@ public class Main {
     Node A_STEER_RIGHT = new Action(new SteerRight());
     Node A_READ_SENSORS = new Action(new ReadSensors());
 
-    Node C_BEACON_VISIBLE = new Invertor(
-        new FloatCondition(
-            new BeaconDistance(),
-            new InBetween(1, 10000)
-        )
+    Node C_BEACON_VISIBLE = new FloatCondition(
+        new BeaconDistance(),
+        new InBetween(1, 1000)
     );
 
     Node C_BEACON_LEFT = new FloatCondition(
@@ -92,23 +89,32 @@ public class Main {
     Node tree = new UntilSuccess(new Failer(new Sequence(
         A_READ_SENSORS,
         new Selector(
-            C_BEACON_CLOSE,
+            new Sequence(C_BEACON_VISIBLE, C_BEACON_CLOSE, A_STOP),
             new Sequence(C_ON_OBSTACLE, A_STOP, A_TURN_LEFT,
-                new UntilSuccess(new Invertor(C_ON_OBSTACLE)),
+                new UntilSuccess(new Sequence(
+                    A_READ_SENSORS,
+                    new Invertor(C_ON_OBSTACLE)
+                )),
                 A_FORWARD,
-                new UntilSuccess(new Selector(
-                    C_BEACON_LEFT,
-                    new Failer(new Selector(
-                        new Sequence(C_ON_OBSTACLE, A_STEER_LEFT),
-                        A_STEER_RIGHT
-                    ))
+                new UntilSuccess(new Sequence(
+                    A_READ_SENSORS,
+                    new Selector(
+                        C_BEACON_LEFT,
+                        new Failer(new Selector(
+                            new Sequence(C_ON_OBSTACLE, A_STEER_LEFT),
+                            A_STEER_RIGHT
+                        ))
+                    )
                 ))
             ),
             new Sequence(
-                C_BEACON_VISIBLE,
+                new Invertor(C_BEACON_VISIBLE),
                 A_STOP,
                 A_TURN_LEFT,
-                new UntilSuccess(C_BEACON_VISIBLE),
+                new UntilSuccess(new Sequence(
+                    A_READ_SENSORS,
+                    C_BEACON_VISIBLE
+                )),
                 A_FORWARD
             ),
             new Sequence(C_BEACON_RIGHT, A_STEER_RIGHT),
@@ -117,10 +123,14 @@ public class Main {
         )
     )));
 
+    Thread.currentThread().setPriority(4);
+
     while (running) {
       tree.run(context);
       Thread.yield();
     }
+
+    context.executor.shutdownNow();
   }
 
 }
