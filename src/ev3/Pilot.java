@@ -1,38 +1,73 @@
 package ev3;
 
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.motor.Motor;
+import lejos.hardware.port.MotorPort;
 import lejos.robotics.navigation.DifferentialPilot;
 
 public class Pilot {
 
-  private DifferentialPilot pilot;
+  private EV3LargeRegulatedMotor left;
+  private EV3LargeRegulatedMotor right;
+  private float basicSpeed;
 
   public Pilot() {
-    pilot = new DifferentialPilot(2.1f, 4.4f, Motor.C, Motor.B, true);
+    left = new EV3LargeRegulatedMotor(MotorPort.C);
+    right = new EV3LargeRegulatedMotor(MotorPort.B);
+
+    basicSpeed = 30;
   }
 
   public void forward() {
-    pilot.forward();
+    equalizeMotorsSpeed();
+
+    left.forward();
+    right.forward();
   }
 
+
   public void steerLeft() {
-    pilot.steer(50);
+    setMotorsSpeed(basicSpeed/2, basicSpeed);
+
+    left.forward();
+    right.forward();
 }
 
   public void steerRight() {
-    pilot.steer(-50);
+    setMotorsSpeed(basicSpeed, basicSpeed/2);
+
+    left.forward();
+    right.forward();
   }
 
   public void stop() {
-    pilot.stop();
+    left.stop();
+    right.stop();
   }
 
   public void turnLeft() {
-    pilot.rotateLeft();
+    equalizeMotorsSpeed();
+
+    right.forward();
+    left.backward();
   }
 
   public void turnRight() {
-    pilot.rotateRight();
+    equalizeMotorsSpeed();
+
+    left.forward();
+    right.backward();
+  }
+
+  private void setMotorsSpeed(float leftSpeed, float rightSpeed)
+  {
+    left.setSpeed(leftSpeed);
+    right.setSpeed(rightSpeed);
+  }
+
+  private void equalizeMotorsSpeed()
+  {
+    setMotorsSpeed(basicSpeed, basicSpeed);
   }
 
 }
