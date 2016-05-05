@@ -6,7 +6,7 @@ public class OneOf implements IntCondition.Predicate {
 
   private int[] test;
 
-  OneOf(int... test) {
+  public OneOf(int... test) {
     if (test != null) {
       this.test = test;
     }

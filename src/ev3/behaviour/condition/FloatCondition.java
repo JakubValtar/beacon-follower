@@ -19,7 +19,7 @@ public class FloatCondition implements Node {
   private Predicate predicate;
   private Value value;
 
-  FloatCondition(Value value, Predicate predicate) {
+  public FloatCondition(Value value, Predicate predicate) {
     this.value = value;
     this.predicate = predicate;
   }

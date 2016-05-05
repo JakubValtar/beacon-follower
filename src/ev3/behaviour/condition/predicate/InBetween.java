@@ -7,7 +7,7 @@ public class InBetween implements FloatCondition.Predicate {
   private float low;
   private float high;
 
-  InBetween(float low, float high) {
+  public InBetween(float low, float high) {
     this.low = low;
     this.high = high;
   }

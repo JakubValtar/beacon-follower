@@ -8,7 +8,7 @@ public class Invertor implements Node {
 
   private Node node;
 
-  Invertor(Node node) {
+  public Invertor(Node node) {
     this.node = node;
   }
 

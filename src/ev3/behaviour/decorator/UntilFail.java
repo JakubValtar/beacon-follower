@@ -8,7 +8,7 @@ public class UntilFail implements Node {
 
   private Node node;
 
-  UntilFail(Node node) {
+  public UntilFail(Node node) {
     this.node = node;
   }
 

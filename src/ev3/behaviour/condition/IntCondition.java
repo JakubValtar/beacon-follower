@@ -19,7 +19,7 @@ public class IntCondition implements Node {
   private Predicate predicate;
   private Value value;
 
-  IntCondition(Value value, Predicate predicate) {
+  public IntCondition(Value value, Predicate predicate) {
     this.value = value;
     this.predicate = predicate;
   }

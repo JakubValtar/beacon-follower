@@ -19,7 +19,7 @@ public class Condition<T> implements Node {
   private Predicate<T> predicate;
   private Value<T> value;
 
-  Condition(Value<T> value, Predicate<T> predicate) {
+  public Condition(Value<T> value, Predicate<T> predicate) {
     this.value = value;
     this.predicate = predicate;
   }

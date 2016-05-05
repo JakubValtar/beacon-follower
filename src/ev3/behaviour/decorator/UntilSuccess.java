@@ -8,7 +8,7 @@ public class UntilSuccess implements Node {
 
   private Node node;
 
-  UntilSuccess(Node node) {
+  public UntilSuccess(Node node) {
     this.node = node;
   }
 

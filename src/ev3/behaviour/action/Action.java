@@ -19,7 +19,7 @@ public class Action implements Node {
 
   private BackgroundTask task;
 
-  Action(BackgroundTask task) {
+  public Action(BackgroundTask task) {
     this.task = task;
   }
 

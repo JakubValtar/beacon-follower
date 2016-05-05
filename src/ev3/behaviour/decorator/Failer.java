@@ -8,7 +8,7 @@ public class Failer implements Node {
 
   private Node node;
 
-  Failer(Node node) {
+  public Failer(Node node) {
     this.node = node;
   }
 

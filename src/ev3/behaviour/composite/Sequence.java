@@ -9,7 +9,7 @@ public class Sequence implements Node {
   private Node[] children = new Node[0];
   private int position = 0;
 
-  Sequence(Node... nodes) {
+  public Sequence(Node... nodes) {
     if (nodes != null) {
       children = nodes;
     }

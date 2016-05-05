@@ -9,7 +9,7 @@ public class Selector implements Node {
   private Node[] children = new Node[0];
   private int position = 0;
 
-  Selector(Node... nodes) {
+  public Selector(Node... nodes) {
     if (nodes != null) {
       children = nodes;
     }

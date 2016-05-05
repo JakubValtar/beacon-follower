@@ -1,13 +1,13 @@
 package ev3.behaviour.condition.value;
 
 import ev3.Context;
-import ev3.behaviour.condition.Condition;
+import ev3.behaviour.condition.FloatCondition;
 
-public class BeaconDirection implements Condition.Value<Float> {
+public class BeaconDirection implements FloatCondition.Value {
 
   @Override
-  public Float get(Context context) {
-    return null;
+  public float get(Context context) {
+    return context.beaconDirection;
   }
 
 }

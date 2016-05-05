@@ -8,7 +8,7 @@ public class Succeeder implements Node {
 
   private Node node;
 
-  Succeeder(Node node) {
+  public Succeeder(Node node) {
     this.node = node;
   }
 

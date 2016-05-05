@@ -1,13 +1,13 @@
 package ev3.behaviour.condition.value;
 
 import ev3.Context;
-import ev3.behaviour.condition.Condition;
+import ev3.behaviour.condition.IntCondition;
 
-public class SurfaceColor implements Condition.Value<Integer> {
+public class SurfaceColor implements IntCondition.Value {
 
   @Override
-  public Integer get(Context context) {
-    return null;
+  public int get(Context context) {
+    return context.color;
   }
 
 }

@@ -6,7 +6,7 @@ public class GreaterThan implements FloatCondition.Predicate {
 
   private float test;
 
-  GreaterThan(float test) {
+  public GreaterThan(float test) {
     this.test = test;
   }
 

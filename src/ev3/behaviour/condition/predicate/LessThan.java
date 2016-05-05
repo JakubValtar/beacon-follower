@@ -6,7 +6,7 @@ public class LessThan implements FloatCondition.Predicate {
 
   private float test;
 
-  LessThan(float test) {
+  public LessThan(float test) {
     this.test = test;
   }
 
