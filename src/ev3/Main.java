@@ -97,7 +97,7 @@ public class Main {
                     A_READ_SENSORS,
                     new Selector(
                         C_BEACON_LEFT,
-                        A_FOLLOW_LINE
+                        new Failer(A_FOLLOW_LINE)
                     )
                 ))
             ),
