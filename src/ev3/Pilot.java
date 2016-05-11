@@ -32,6 +32,11 @@ public class Pilot {
     chassis.setVelocity(linearSpeed, angularSpeed);
   }
 
+  public void steer(double rate)
+  {
+    chassis.setVelocity(linearSpeed, angularSpeed * rate);
+  }
+
   public void stop() {
     chassis.stop();
   }

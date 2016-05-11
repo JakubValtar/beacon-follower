@@ -3,13 +3,7 @@ package ev3;
 
 import ev3.behaviour.Node;
 import ev3.behaviour.action.Action;
-import ev3.behaviour.action.backgroundtask.Forward;
-import ev3.behaviour.action.backgroundtask.ReadSensors;
-import ev3.behaviour.action.backgroundtask.SteerLeft;
-import ev3.behaviour.action.backgroundtask.SteerRight;
-import ev3.behaviour.action.backgroundtask.Stop;
-import ev3.behaviour.action.backgroundtask.TurnLeft;
-import ev3.behaviour.action.backgroundtask.TurnRight;
+import ev3.behaviour.action.backgroundtask.*;
 import ev3.behaviour.composite.Selector;
 import ev3.behaviour.composite.Sequence;
 import ev3.behaviour.condition.FloatCondition;
@@ -50,7 +44,9 @@ public class Main {
     Context context = new Context();
 
     float successDistance = 10;
-    int obstacleColor = Color.BLUE;
+    int obstacleColor = Color.WHITE;
+    float obstacleLightness = 1;
+    float groundLightness = 0;
     float directionLimit = 2;
 
     Node A_FORWARD = new Action(new Forward());
@@ -60,6 +56,7 @@ public class Main {
     Node A_STEER_LEFT = new Action(new SteerLeft());
     Node A_STEER_RIGHT = new Action(new SteerRight());
     Node A_READ_SENSORS = new Action(new ReadSensors());
+    Node A_FOLLOW_LINE = new Action(new FollowLine(obstacleLightness, groundLightness));
 
     Node C_BEACON_VISIBLE = new FloatCondition(
         new BeaconDistance(),
@@ -100,10 +97,7 @@ public class Main {
                     A_READ_SENSORS,
                     new Selector(
                         C_BEACON_LEFT,
-                        new Failer(new Selector(
-                            new Sequence(C_ON_OBSTACLE, A_STEER_LEFT),
-                            A_STEER_RIGHT
-                        ))
+                        A_FOLLOW_LINE
                     )
                 ))
             ),

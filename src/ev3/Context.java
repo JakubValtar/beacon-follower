@@ -10,6 +10,7 @@ public class Context {
   public float beaconDistance;
   public float beaconDirection;
   public int surfaceColor;
+  public float surfaceLightness;
 
   public Pilot pilot;
   public SensorReader sensorReader;
