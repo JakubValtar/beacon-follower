@@ -21,6 +21,7 @@ import ev3.behaviour.decorator.UntilSuccess;
 import lejos.hardware.Button;
 import lejos.hardware.Key;
 import lejos.hardware.KeyListener;
+import lejos.hardware.lcd.LCD;
 import lejos.robotics.Color;
 
 public class Main {
@@ -119,12 +120,42 @@ public class Main {
 
     Thread.currentThread().setPriority(4);
 
-    while (running) {
-      tree.run(context);
-      Thread.yield();
-    }
+    LCD.clear();
+    LCD.drawString("Hold ENTER for run, UP for calibration.", 0, 5);
 
+    Button.waitForAnyPress();
+    int button = Button.readButtons();
+
+    if(button == Button.ID_ENTER)
+    {
+      while (running)
+      {
+        tree.run(context);
+        Thread.yield();
+      }
+    }
+    else if(button == Button.ID_UP)
+    {
+      LCD.clear();
+      LCD.drawString("Put Bobes on a ground and press any button.", 0, 5);
+      Button.waitForAnyPress();
+      context.sensorReader.read(context);
+      groundLightness =context.surfaceLightness;
+
+      LCD.clear();
+      LCD.drawString("Put Bobes on an obstacle and press any button.", 0, 5);
+      Button.waitForAnyPress();
+      context.sensorReader.read(context);
+      obstacleLightness =context.surfaceLightness;
+      obstacleColor = context.surfaceColor;
+
+      while (running)
+      {
+        tree.run(context);
+        Thread.yield();
+      }
+    }
     context.executor.shutdownNow();
   }
-
 }
+
