@@ -43,10 +43,7 @@ public class SensorReader {
 
   private float calculateLightness(float red, float green, float blue)
   {
-    float M = Math.max(Math.max(red, green), blue);
-    float m = Math.min(Math.min(red, green), blue);
-
-    return (M + m)*5;
+    return 0.3f * red + 0.59f * green + 0.11f * blue;
   }
 
 }
