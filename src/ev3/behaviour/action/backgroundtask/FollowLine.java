@@ -7,34 +7,45 @@ public class FollowLine implements Action.BackgroundTask
 {
     private float obstacleColor;
     private float groundColor;
-    private float midColor;
-    private double kp;
-    private double lightnessAverage = -1;
-    private double averageRatio = 0.6;
 
     public FollowLine(float obstacleColor, float groundColor)
     {
         this.obstacleColor = obstacleColor;
         this.groundColor = groundColor;
-        midColor = (obstacleColor + groundColor) / 2;
-        kp = 2;
     }
 
     @Override
     public boolean runInBackground(Context context)
     {
-        if (lightnessAverage == -1) {
-            lightnessAverage = context.surfaceLightness;
-        } else {
-            lightnessAverage = averageRatio * lightnessAverage +
-                    (1 - averageRatio) * context.surfaceLightness;
-        }
-        double diff = midColor - lightnessAverage;
-        double steerRate = kp * diff;
-        double linearAmt = 1.5f - (Math.abs(diff) / (Math.abs(obstacleColor - groundColor)/2));
-        linearAmt = Math.max(0.5f, linearAmt);
-        context.pilot.steer(linearAmt, steerRate);
+        // clip to (ground -> obstacle)
+        float diff = clip(context.surfaceLightness, groundColor, obstacleColor);
+        // from (ground -> obstacle) to (0 -> 1)
+        diff = norm(diff, obstacleColor, groundColor);
+        // from (0 -> 1) to (-1 -> 1)
+        diff = 2*diff - 1;
+
+        int sign = (int) Math.signum(diff);
+        float mag = (float) Math.pow(Math.abs(diff), 4);
+
+        float linearAmt = mix(0.2f, 1.2f, 1 - mag);
+        float angularAmt = mix(0.0f, 0.9f, sign * mag);
+        
+        context.pilot.steer(linearAmt, angularAmt);
 
         return true;
+    }
+
+    static float mix(float a, float b, float ratio) {
+        return a * (1 - ratio) + b * ratio;
+    }
+
+    static float clip(float val, float a, float b) {
+        val = Math.min(val, Math.max(a, b));
+        val = Math.max(val, Math.min(a, b));
+        return val;
+    }
+
+    static float norm(float val, float a, float b) {
+        return (val - a) / (b - a);
     }
 }
