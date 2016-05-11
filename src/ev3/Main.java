@@ -46,9 +46,37 @@ public class Main {
 
     float successDistance = 10;
     int obstacleColor = Color.WHITE;
-    float obstacleLightness = 1;
-    float groundLightness = 0.2f;
+    float obstacleLightness = 0.1286f;
+    float groundLightness = 0.027f;
     float directionLimit = 2;
+
+
+    LCD.clear();
+    LCD.drawString("Hold ENTER for run, UP for calibration.", 0, 5);
+
+    Button.waitForAnyPress();
+    int button = Button.readButtons();
+
+    if(button == Button.ID_ENTER)
+    { /* skip to main loop */ }
+    else if(button == Button.ID_UP)
+    {
+      LCD.clear();
+      LCD.drawString("Put Bobes on a ground and press any button.", 0, 5);
+      Button.waitForAnyPress();
+      context.sensorReader.read(context);
+      groundLightness =context.surfaceLightness;
+      System.out.println("ground: " + groundLightness);
+
+      LCD.clear();
+      LCD.drawString("Put Bobes on an obstacle and press any button.", 0, 5);
+      Button.waitForAnyPress();
+      context.sensorReader.read(context);
+      obstacleLightness = context.surfaceLightness;
+      obstacleColor = context.surfaceColor;
+      System.out.println("obstacle: " + obstacleLightness);
+    }
+
 
     Node A_FORWARD = new Action(new Forward());
     Node A_STOP = new Action(new Stop());
@@ -118,43 +146,25 @@ public class Main {
         )
     )));
 
-    Thread.currentThread().setPriority(4);
+    //Thread.currentThread().setPriority(5);
 
-    LCD.clear();
-    LCD.drawString("Hold ENTER for run, UP for calibration.", 0, 5);
+    long startTime = System.currentTimeMillis();
+    int frameCount = 0;
 
-    Button.waitForAnyPress();
-    int button = Button.readButtons();
-
-    if(button == Button.ID_ENTER)
+    while (running)
     {
-      while (running)
-      {
-        tree.run(context);
-        Thread.yield();
-      }
+      tree.run(context);
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) { }
+      frameCount++;
     }
-    else if(button == Button.ID_UP)
-    {
-      LCD.clear();
-      LCD.drawString("Put Bobes on a ground and press any button.", 0, 5);
-      Button.waitForAnyPress();
-      context.sensorReader.read(context);
-      groundLightness =context.surfaceLightness;
 
-      LCD.clear();
-      LCD.drawString("Put Bobes on an obstacle and press any button.", 0, 5);
-      Button.waitForAnyPress();
-      context.sensorReader.read(context);
-      obstacleLightness =context.surfaceLightness;
-      obstacleColor = context.surfaceColor;
+    double seconds = (System.currentTimeMillis() - startTime) / 1e3;
+    System.out.println("frames: " + frameCount);
+    System.out.println("time: " + seconds + " s");
+    System.out.println("fps: " + (double) frameCount / seconds);
 
-      while (running)
-      {
-        tree.run(context);
-        Thread.yield();
-      }
-    }
     context.executor.shutdownNow();
   }
 }
