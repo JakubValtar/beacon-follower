@@ -46,7 +46,7 @@ public class Main {
     float successDistance = 10;
     int obstacleColor = Color.WHITE;
     float obstacleLightness = 1;
-    float groundLightness = 0;
+    float groundLightness = 0.2f;
     float directionLimit = 2;
 
     Node A_FORWARD = new Action(new Forward());
