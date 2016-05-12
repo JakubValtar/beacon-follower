@@ -1,6 +1,7 @@
 package ev3;
 
 
+import ev3.backgroundtask.ScanSurface;
 import ev3.behaviourtree.Node;
 import ev3.behaviourtree.Action;
 import ev3.backgroundtask.FollowLine;
@@ -11,16 +12,16 @@ import ev3.backgroundtask.SteerRight;
 import ev3.backgroundtask.Stop;
 import ev3.backgroundtask.TurnLeft;
 import ev3.backgroundtask.TurnRight;
+import ev3.behaviourtree.Result;
 import ev3.behaviourtree.composite.Selector;
 import ev3.behaviourtree.composite.Sequence;
 import ev3.behaviourtree.Condition;
-import ev3.behaviourtree.predicate.Equals;
 import ev3.behaviourtree.predicate.GreaterThan;
 import ev3.behaviourtree.predicate.InBetween;
 import ev3.behaviourtree.predicate.LessThan;
 import ev3.value.BeaconDirection;
 import ev3.value.BeaconDistance;
-import ev3.value.SurfaceColor;
+import ev3.value.ObstacleProbability;
 import ev3.behaviourtree.decorator.Failer;
 import ev3.behaviourtree.decorator.Invertor;
 import ev3.behaviourtree.decorator.UntilSuccess;
@@ -28,14 +29,13 @@ import lejos.hardware.Button;
 import lejos.hardware.Key;
 import lejos.hardware.KeyListener;
 import lejos.hardware.lcd.LCD;
-import lejos.robotics.Color;
 
 public class Main {
 
   private static volatile boolean running = true;
 
-  private static final int SUCCESS_DISTANCE = 25;
-  private static final int BEACON_DIRECTION_DEADZONE = 2;
+  private static final int SUCCESS_DISTANCE = 15;
+  private static final int BEACON_DIRECTION_DEADZONE = 4;
 
   private static final int LINEAR_SPEED = 20;
   private static final int ANGULAR_SPEED = 10;
@@ -60,15 +60,14 @@ public class Main {
     Context context = new Context(pilot);
 
     // Defaults
-    int obstacleColor = Color.WHITE;
-    float obstacleLght = 0.1286f;
-    float groundLght = 0.027f;
+    context.obstacleLght = 0.1f;
+    context.groundLght = 0.028f;
 
     // Show menu
     LCD.clear();
-    LCD.drawString("ENTER: run\n" +
-                       "UP: calibration\n" +
-                       "ESC: stop program", 0, 0);
+    LCD.drawString("ENTER: run", 0, 0);
+    LCD.drawString("UP: calibration", 0, 1);
+    LCD.drawString("ESC: stop program", 0, 2);
 
     int buttons = Button.waitForAnyPress();
 
@@ -77,24 +76,42 @@ public class Main {
 
       // Ground
       LCD.clear();
-      LCD.drawString("Put Bobes on\n" +
-                         "ground and press\n" +
-                         "any button", 0, 0);
+      LCD.drawString("Put Bobes on", 0, 0);
+      LCD.drawString("ground and press", 0, 1);
+      LCD.drawString("any button", 0, 2);
+
       Button.waitForAnyPress();
-      context.sensorReader.read(context);
-      groundLght = context.surfaceLght;
-      System.out.println("ground: " + groundLght);
+
+      sleep(1000);
+
+      { // Scan ground
+        Node scanGround = new Action(new ScanSurface(true));
+        while (scanGround.run(context) == Result.RUNNING) {
+          sleep(10);
+        }
+      }
 
       // Obstacle
       LCD.clear();
-      LCD.drawString("Put Bobes on\n" +
-                         "obstacle and\n" +
-                         "press any button", 0, 0);
+      LCD.drawString("Put Bobes on", 0, 0);
+      LCD.drawString("obstacle and", 0, 1);
+      LCD.drawString("press any button", 0, 2);
+
       Button.waitForAnyPress();
-      context.sensorReader.read(context);
-      obstacleLght = context.surfaceLght;
-      obstacleColor = context.surfaceColor;
-      System.out.println("obstacle: " + obstacleLght);
+
+      sleep(1000);
+
+      { // Scan obstacle
+        Node scanObstacle = new Action(new ScanSurface(false));
+        while (scanObstacle.run(context) == Result.RUNNING) {
+          sleep(10);
+        }
+      }
+
+      System.out.println("ground: " + context.groundLght);
+      System.out.println("obstacle: " + context.obstacleLght);
+
+      LCD.clear();
     }
 
     // Actions (run on background thread)
@@ -105,7 +122,7 @@ public class Main {
     Node A_STEER_LEFT = new Action(new SteerLeft());
     Node A_STEER_RIGHT = new Action(new SteerRight());
     Node A_READ_SENSORS = new Action(new ReadSensors());
-    Node A_FOLLOW_LINE = new Action(new FollowLine(groundLght, obstacleLght));
+    Node A_FOLLOW_LINE = new Action(new FollowLine());
 
     // Conditions (complete immediately)
     Node C_BEACON_VISIBLE = new Condition(
@@ -121,9 +138,8 @@ public class Main {
         new BeaconDistance(), new LessThan(SUCCESS_DISTANCE)
     );
     Node C_ON_OBSTACLE = new Condition(
-        new SurfaceColor(), new Equals(obstacleColor)
+        new ObstacleProbability(), new GreaterThan(50)
     );
-
 
     // Create the Behavior Tree
     Node tree = new Selector(
@@ -176,6 +192,8 @@ public class Main {
         )
     );
 
+    Thread.currentThread().setPriority(3);
+
     // Loop through behavior tree until done (ESC pressed)
     while (running) {
       tree.run(context);
@@ -187,7 +205,7 @@ public class Main {
 
 
   // Utility method for sleeping
-  private static void sleep(long millis) {
+  public static void sleep(long millis) {
     try {
       Thread.sleep(millis);
     } catch (InterruptedException e) { }

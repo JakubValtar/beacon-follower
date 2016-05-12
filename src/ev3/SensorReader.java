@@ -8,10 +8,8 @@ import lejos.hardware.sensor.SensorMode;
 public class SensorReader {
 
   private SensorMode irMode;
-  private SensorMode colorMode;
   private SensorMode rgbMode;
   private float[] sample_ir;
-  private float[] sample_color;
   private float[] sample_rgb;
 
   public SensorReader() {
@@ -19,11 +17,9 @@ public class SensorReader {
     EV3ColorSensor ev3ColorSensor = new EV3ColorSensor(SensorPort.S3);
 
     irMode = ev3IRSensor.getSeekMode();
-    colorMode = ev3ColorSensor.getColorIDMode();
     rgbMode = ev3ColorSensor.getRGBMode();
 
     sample_ir = new float[irMode.sampleSize()];
-    sample_color = new float[colorMode.sampleSize()];
     sample_rgb = new float[rgbMode.sampleSize()];
   }
 
@@ -32,10 +28,6 @@ public class SensorReader {
     irMode.fetchSample(sample_ir, 0);
     context.beaconDirection = (int) sample_ir[0];
     context.beaconDistance = (int) sample_ir[1];
-
-    // Read surface color index
-    colorMode.fetchSample(sample_color, 0);
-    context.surfaceColor = (int) sample_color[0];
 
     // Read surface color lightness
     rgbMode.fetchSample(sample_rgb, 0);

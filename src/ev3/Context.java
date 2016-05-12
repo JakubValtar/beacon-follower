@@ -12,8 +12,10 @@ public class Context {
 
   public int beaconDistance;
   public int beaconDirection;
-  public int surfaceColor;
   public float surfaceLght;
+
+  public float groundLght;
+  public float obstacleLght;
 
   public Context(Pilot pilot) {
     executor = Executors.newSingleThreadExecutor();
