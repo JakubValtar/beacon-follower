@@ -8,16 +8,15 @@ public class Pilot {
 
   private WheeledChassis chassis;
 
-  private float linearSpeed;
-  private float angularSpeed;
+  private final float linearSpeed;
+  private final float angularSpeed;
 
-  public Pilot() {
+  public Pilot(float linearSpeed, float angularSpeed) {
     Wheel left = WheeledChassis.modelWheel(Motor.C, 10).offset(-70).invert(true);
     Wheel right = WheeledChassis.modelWheel(Motor.B, 10).offset(70).invert(true);
     chassis = new WheeledChassis(new Wheel[] { left, right }, WheeledChassis.TYPE_DIFFERENTIAL);
-
-    linearSpeed = 20;
-    angularSpeed = 10;
+    this.linearSpeed = linearSpeed;
+    this.angularSpeed = angularSpeed;
   }
 
   public void forward() {
@@ -32,9 +31,8 @@ public class Pilot {
     chassis.setVelocity(linearSpeed, angularSpeed);
   }
 
-  public void steer(double speedAmt, double rate)
-  {
-    chassis.setVelocity(linearSpeed * speedAmt, angularSpeed * rate);
+  public void setVelocity(double linearAmt, double angularAmt) {
+    chassis.setVelocity(linearSpeed * linearAmt, angularSpeed * angularAmt);
   }
 
   public void stop() {

@@ -7,18 +7,18 @@ public class Context {
 
   public final ExecutorService executor;
 
-  public float beaconDistance;
-  public float beaconDirection;
+  public final Pilot pilot;
+  public final SensorReader sensorReader;
+
+  public int beaconDistance;
+  public int beaconDirection;
   public int surfaceColor;
-  public float surfaceLightness;
+  public float surfaceLght;
 
-  public Pilot pilot;
-  public SensorReader sensorReader;
-
-  public Context() {
+  public Context(Pilot pilot) {
     executor = Executors.newSingleThreadExecutor();
 
-    pilot = new Pilot();
+    this.pilot = pilot;
     sensorReader = new SensorReader();
   }
 
